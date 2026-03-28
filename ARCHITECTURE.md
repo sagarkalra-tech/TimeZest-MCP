@@ -67,8 +67,9 @@ timezest-mcp/
 │       ├── transform.ts        # Normalization logic (Team/Agent mapping, Status)
 │       └── filter.ts           # Partial matching and date-math utilities
 ├── build/                      # Compiled ES6 output (Ready for npm)
-├── .claude/                    # Local configuration for AI assistants
-├── .github/                    # CI/CD workflows (if applicable)
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # GitHub Actions: build + test on Node 20 & 22
 ├── package.json                # Dependency manifest and lifecycle scripts
 ├── tsconfig.json               # TypeScript compiler rules
 └── vitest.config.ts            # Testing framework configuration
@@ -116,11 +117,42 @@ The most critical part of the server. TimeZest API objects are deeply nested; th
 
 ## 🧪 Testing Infrastructure
 
-We use **Vitest** to ensure the server is "Enterprise Ready." Every major logic block is covered:
+We use **Vitest 4.x** to ensure the server is "Enterprise Ready." The suite contains **22 tests across 3 test files**, covering every major logic block:
 
-- **Transform Tests**: Verify that "Unassigned" correctly flags team dispatches and that ticket numbers are extracted correctly from the entity array.
-- **Filter Tests**: Verify that partial name matching (e.g., "Scout" matching "Scout Kalra") is case-insensitive and robust.
-- **Client Tests**: Verify that pagination terminates correctly and handles empty result sets.
+| Test File | Tests | What It Covers |
+|-----------|-------|----------------|
+| `transform.test.ts` | 8 | Engineer resolution priority, ticket extraction, timezone conversion, graceful handling of missing fields |
+| `filter.test.ts` | 6 | Case-insensitive partial name matching, team name matching, date-range interval filtering, pending appointment fallback logic |
+| `client.test.ts` | 8 | Appointment type caching, pagination termination, retry on 429/5xx, no-retry on 4xx client errors, retry exhaustion |
+
+All tests use **mocked API responses** — no live TimeZest API calls are made during testing, making the suite fast and deterministic.
+
+```bash
+npm run test          # Single run
+npm run test:watch    # Re-runs on file save
+```
+
+---
+
+## 🚀 CI/CD Pipeline
+
+**File:** `.github/workflows/ci.yml`
+
+Every push to `main` and every pull request triggers an automated pipeline on GitHub Actions:
+
+| Step | Command | Purpose |
+|------|---------|---------|
+| Install | `npm ci` | Strict install from lock file (fails on mismatch) |
+| Build | `npm run build` | TypeScript compilation via `tsc` |
+| Test | `npm test` | Runs all 22 Vitest tests |
+
+**Node.js Matrix:** `[20, 22]`
+> Node 18 was dropped because Vitest 4.x internally uses `node:util.styleText`, which was introduced in Node 20.
+
+**Key Design Decisions:**
+- `npm ci` (not `npm install`) ensures reproducible builds with no lock file drift.
+- The matrix strategy validates compatibility across current LTS (20) and latest (22) Node releases.
+- Tests use mocked HTTP responses, so no API keys or secrets are required for CI to pass.
 
 ---
 
