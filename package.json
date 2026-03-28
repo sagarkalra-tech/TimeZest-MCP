@@ -4,6 +4,15 @@
   "description": "MCP Server for TimeZest scheduling API — brings appointments, pending requests, and ticket-linked schedules to Claude.",
   "main": "build/index.js",
   "author": "Sagar Kalra",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sagarkalra-tech/TimeZest-MCP.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sagarkalra-tech/TimeZest-MCP/issues"
+  },
+  "homepage": "https://github.com/sagarkalra-tech/TimeZest-MCP#readme",
   "keywords": [
     "mcp",
     "model-context-protocol",
@@ -20,7 +29,8 @@
     "build"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "build": "tsc",
