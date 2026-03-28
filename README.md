@@ -15,18 +15,11 @@ Bring your **TimeZest** scheduling data directly into Claude through the Model C
 
 ---
 
-## 📋 Prerequisites
+## 🚀 Quick Start (via npm/npx)
 
-- **Node.js** (v18 or higher) — Required to run the server via `npx`.
-- **TimeZest API Key** — A Bearer token from your TimeZest integration page.
+The fastest way to use this server is via `npx`. No manual cloning or building is required to get started.
 
----
-
-## 🚀 Installation & Setup
-
-You don't need to download or build the source code to use this. You can run it directly using `npx`.
-
-### Option 1: Claude Desktop (GUI)
+### 1. Configure Claude Desktop
 Open your Claude Desktop configuration file:
 - **Windows:** `%AppData%\Roaming\Claude\claude_desktop_config.json`
 - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
@@ -47,10 +40,9 @@ Add the following entry to the `mcpServers` object:
   }
 }
 ```
-*(Windows Users: If `npx` is not in your system path, you can use `"command": "cmd", "args": ["/c", "npx", "-y", "timezest-mcp@latest"]` instead.)*
 
-### Option 2: Claude Code (CLI)
-Run this single command in your terminal to add the server globally:
+### 2. Configure via Claude Code (CLI)
+Run the following command in your terminal to add the server globally:
 
 ```bash
 # Windows
@@ -87,7 +79,37 @@ Once connected, try asking Claude:
 
 ---
 
-## ⚙️ Configuration
+## 🔧 Development & Contributing
+
+If you wish to contribute to the project or build the server from source, follow these steps:
+
+### Manual Installation
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/sagarkalra-tech/TimeZest-MCP.git
+   ```
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Build the project**:
+   ```bash
+   npm run build
+   ```
+4. **Run the server locally**:
+   ```bash
+   npm start
+   ```
+
+### Running Tests
+We use **Vitest** for all our transformations and API logic. To run the suite:
+```bash
+npm run test
+```
+
+---
+
+## ⚙️ Configuration Variables
 
 - `TIMEZEST_API_KEY` (Required): Your TimeZest Bearer token.
 - `TIMEZEST_DEFAULT_TZ` (Optional): Default IANA timezone (e.g. `America/Chicago`).
