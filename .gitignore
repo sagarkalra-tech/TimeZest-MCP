@@ -3,3 +3,9 @@ build/
 *.tgz
 .env
 *.log
+
+# Personal/Large files
+TimeZestTest_Claude.py
+timezest-mcp-implementation-plan.md
+timezest_exploration_*.json
+.claude/
