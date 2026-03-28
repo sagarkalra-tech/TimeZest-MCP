@@ -1,0 +1,44 @@
+{
+  "name": "timezest-mcp",
+  "version": "1.0.6",
+  "description": "MCP Server for TimeZest scheduling API — brings appointments, pending requests, and ticket-linked schedules to Claude.",
+  "main": "build/index.js",
+  "author": "Sagar Kalra",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "timezest",
+    "scheduling",
+    "connectwise",
+    "msp"
+  ],
+  "type": "module",
+  "bin": {
+    "timezest-mcp": "build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build",
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0",
+    "axios": "^1.6.0",
+    "date-fns": "^3.0.0",
+    "date-fns-tz": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.2"
+  }
+}

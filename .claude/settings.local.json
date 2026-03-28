@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__timezest__get_appointment_stats",
+      "Bash(npm run:*)",
+      "Bash(npm version:*)",
+      "Bash(npm publish:*)",
+      "mcp__timezest__get_todays_appointments",
+      "mcp__timezest__get_appointment_types",
+      "mcp__timezest__list_appointments",
+      "mcp__timezest__list_pending_requests",
+      "mcp__timezest__list_cancelled_appointments",
+      "mcp__timezest__get_engineer_schedule",
+      "mcp__timezest__find_appointment_by_ticket",
+      "Bash(node -e \":*)",
+      "Bash(TIMEZEST_API_KEY=\"IViu8ZqgFMgY74mAbqYjHnrg9ieUHf0g\" node -e \":*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}
