@@ -1,6 +1,6 @@
 {
   "name": "timezest-mcp",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "MCP Server for TimeZest scheduling API — brings appointments, pending requests, and ticket-linked schedules to Claude.",
   "main": "build/index.js",
   "author": "Sagar Kalra",
