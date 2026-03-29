@@ -9,3 +9,9 @@ TimeZestTest_Claude.py
 timezest-mcp-implementation-plan.md
 timezest_exploration_*.json
 .claude/
+
+# MCP Registry publisher
+.mcpregistry_github_token
+.mcpregistry_registry_token
+mcp-publisher.exe
+.smithery/

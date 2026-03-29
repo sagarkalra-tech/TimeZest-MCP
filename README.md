@@ -1,121 +1,153 @@
-# 📅 TimeZest MCP Server
+# MCP Registry
 
-Bring your **TimeZest** scheduling data directly into Claude through the Model Context Protocol (MCP). Perform real-time scheduling lookups, engineer briefings, and ticket-linked appointment management without leaving your chat.
+The MCP registry provides MCP clients with a list of MCP servers, like an app store for MCP servers.
 
----
+[**📤 Publish my MCP server**](docs/modelcontextprotocol-io/quickstart.mdx) | [**⚡️ Live API docs**](https://registry.modelcontextprotocol.io/docs) | [**👀 Ecosystem vision**](docs/design/ecosystem-vision.md) | 📖 **[Full documentation](./docs)**
 
-## 🌟 Features
+## Development Status
 
-- **Morning Briefings**: Instantly get confirmed vs. pending invitations for today, grouped by engineer.
-- **Ticket Lookups**: Look up appointments by their original ConnectWise ticket number (e.g. #964400).
-- **Engineer Schedules**: View upcoming timelines for specific staff members.
-- **Pending Follow-ups**: Identify aging, unbooked invitations to prevent ticket stall.
-- **Cancellation Insights**: Quickly triage cancelled requests for rebooking.
-- **Enterprise Ready**: Full support for timezone transformations (TZ) and automated Vitest testing suite.
+**2025-10-24 update**: The Registry API has entered an **API freeze (v0.1)** 🎉. For the next month or more, the API will remain stable with no breaking changes, allowing integrators to confidently implement support. This freeze applies to v0.1 while development continues on v0. We'll use this period to validate the API in real-world integrations and gather feedback to shape v1 for general availability. Thank you to everyone for your contributions and patience—your involvement has been key to getting us here!
 
----
+**2025-09-08 update**: The registry has launched in preview 🎉 ([announcement blog post](https://blog.modelcontextprotocol.io/posts/2025-09-08-mcp-registry-preview/)). While the system is now more stable, this is still a preview release and breaking changes or data resets may occur. A general availability (GA) release will follow later. We'd love your feedback in [GitHub discussions](https://github.com/modelcontextprotocol/registry/discussions/new?category=ideas) or in the [#registry-dev Discord](https://discord.com/channels/1358869848138059966/1369487942862504016) ([joining details here](https://modelcontextprotocol.io/community/communication)).
 
-## 🚀 Quick Start (via npm/npx)
+Current key maintainers:
+- **Adam Jones** (Anthropic) [@domdomegg](https://github.com/domdomegg)  
+- **Tadas Antanavicius** (PulseMCP) [@tadasant](https://github.com/tadasant)
+- **Toby Padilla** (GitHub) [@toby](https://github.com/toby)
+- **Radoslav (Rado) Dimitrov** (Stacklok) [@rdimitrov](https://github.com/rdimitrov)
 
-The fastest way to use this server is via `npx`. No manual cloning or building is required to get started.
+## Contributing
 
-### 1. Configure Claude Desktop
-Open your Claude Desktop configuration file:
-- **Windows:** `%AppData%\Roaming\Claude\claude_desktop_config.json`
-- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+We use multiple channels for collaboration - see [modelcontextprotocol.io/community/communication](https://modelcontextprotocol.io/community/communication).
 
-Add the following entry to the `mcpServers` object:
+Often (but not always) ideas flow through this pipeline:
 
-```json
-{
-  "mcpServers": {
-    "timezest": {
-      "command": "npx",
-      "args": ["-y", "timezest-mcp@latest"],
-      "env": {
-        "TIMEZEST_API_KEY": "YOUR_API_KEY_HERE",
-        "TIMEZEST_DEFAULT_TZ": "America/Chicago"
-      }
-    }
-  }
-}
-```
+- **[Discord](https://modelcontextprotocol.io/community/communication)** - Real-time community discussions
+- **[Discussions](https://github.com/modelcontextprotocol/registry/discussions)** - Propose and discuss product/technical requirements
+- **[Issues](https://github.com/modelcontextprotocol/registry/issues)** - Track well-scoped technical work  
+- **[Pull Requests](https://github.com/modelcontextprotocol/registry/pulls)** - Contribute work towards issues
 
-### 2. Configure via Claude Code (CLI)
-Run the following command in your terminal to add the server globally:
+### Quick start:
+
+#### Pre-requisites
+
+- **Docker**
+- **Go 1.24.x**
+- **ko** - Container image builder for Go ([installation instructions](https://ko.build/install/))
+- **golangci-lint v2.4.0**
+
+#### Running the server
 
 ```bash
-# Windows
-claude mcp add-json timezest "{\"type\": \"stdio\", \"command\": \"cmd\", \"args\": [\"/c\", \"npx\", \"-y\", \"timezest-mcp@latest\"], \"env\": {\"TIMEZEST_API_KEY\": \"YOUR_API_KEY\", \"TIMEZEST_DEFAULT_TZ\": \"America/Chicago\"}}"
-
-# macOS / Linux
-claude mcp add-json timezest '{"type": "stdio", "command": "npx", "args": ["-y", "timezest-mcp@latest"], "env": {"TIMEZEST_API_KEY": "YOUR_API_KEY", "TIMEZEST_DEFAULT_TZ": "America/Chicago"}}'
+# Start full development environment
+make dev-compose
 ```
 
----
+This starts the registry at [`localhost:8080`](http://localhost:8080) with PostgreSQL. The database uses ephemeral storage and is reset each time you restart the containers, ensuring a clean state for development and testing.
 
-## 💡 Example Prompts
+**Note:** The registry uses [ko](https://ko.build) to build container images. The `make dev-compose` command automatically builds the registry image with ko and loads it into your local Docker daemon before starting the services.
 
-Once connected, try asking Claude:
-- *"What's the briefing for today?"*
-- *"Show me Scout's schedule for next week"*
-- *"Find any TimeZest requests for ticket #964400"*
-- *"Provide appointment stats for the last 14 days"*
-- *"Show me recently cancelled appointments for rebooking"*
+By default, the registry seeds from the production API with a filtered subset of servers (to keep startup fast). This ensures your local environment mirrors production behavior and all seed data passes validation. For offline development you can seed from a file without validation with `MCP_REGISTRY_SEED_FROM=data/seed.json MCP_REGISTRY_ENABLE_REGISTRY_VALIDATION=false make dev-compose`.
 
----
+The setup can be configured with environment variables in [docker-compose.yml](./docker-compose.yml) - see [.env.example](./.env.example) for a reference.
 
-## 🛠️ Available Tools
+<details>
+<summary>Alternative: Running a pre-built Docker image</summary>
 
-| Tool | Purpose |
-|------|---------|
-| `get_todays_appointments` | Morning briefing: Confirmed today vs. pending unbooked |
-| `list_appointments` | Flexible range search with engineer and status filters |
-| `get_engineer_schedule` | Sorted timeline for a specific engineer |
-| `list_pending_requests` | Follow up on `sent` and `new` (unbooked) invitations |
-| `find_appointment_by_ticket` | Instant lookup using source ticket numbers |
-| `get_appointment_stats` | Management summary: Counts, minutes, and aging requests |
-| `list_cancelled_appointments` | Triage cancelled requests with rebooking URLs |
+Pre-built Docker images are automatically published to GitHub Container Registry:
 
----
-
-## 🔧 Development & Contributing
-
-If you wish to contribute to the project or build the server from source, follow these steps:
-
-### Manual Installation
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/sagarkalra-tech/TimeZest-MCP.git
-   ```
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-3. **Build the project**:
-   ```bash
-   npm run build
-   ```
-4. **Run the server locally**:
-   ```bash
-   npm start
-   ```
-
-### Running Tests
-We use **Vitest** for all our transformations and API logic. To run the suite:
 ```bash
-npm run test
+# Run latest stable release
+docker run -p 8080:8080 ghcr.io/modelcontextprotocol/registry:latest
+
+# Run latest from main branch (continuous deployment)
+docker run -p 8080:8080 ghcr.io/modelcontextprotocol/registry:main
+
+# Run specific release version
+docker run -p 8080:8080 ghcr.io/modelcontextprotocol/registry:v1.0.0
+
+# Run development build from main branch
+docker run -p 8080:8080 ghcr.io/modelcontextprotocol/registry:main-20250906-abc123d
 ```
 
----
+**Available tags:** 
+- **Releases**: `latest`, `v1.0.0`, `v1.1.0`, etc.
+- **Continuous**: `main` (latest main branch build)
+- **Development**: `main-<date>-<sha>` (specific commit builds)
 
-## ⚙️ Configuration Variables
+</details>
 
-- `TIMEZEST_API_KEY` (Required): Your TimeZest Bearer token.
-- `TIMEZEST_DEFAULT_TZ` (Optional): Default IANA timezone (e.g. `America/Chicago`).
+#### Publishing a server
 
----
+To publish a server, we've built a simple CLI. You can use it with:
 
-## 📄 License
+```bash
+# Build the latest CLI
+make publisher
 
-MIT © 2026 Sagar Kalra.
+# Use it!
+./bin/mcp-publisher --help
+```
+
+See [the publisher guide](./docs/modelcontextprotocol-io/quickstart.mdx) for more details.
+
+#### Other commands
+
+```bash
+# Run lint, unit tests and integration tests
+make check
+```
+
+There are also a few more helpful commands for development. Run `make help` to learn more, or look in [Makefile](./Makefile).
+
+<!--
+For Claude and other AI tools: Always prefer make targets over custom commands where possible.
+-->
+
+## Architecture
+
+### Project Structure
+
+```
+├── cmd/                     # Application entry points
+│   └── publisher/           # Server publishing tool
+├── data/                    # Seed data
+├── deploy/                  # Deployment configuration (Pulumi)
+├── docs/                    # Documentation
+├── internal/                # Private application code
+│   ├── api/                 # HTTP handlers and routing
+│   ├── auth/                # Authentication (GitHub OAuth, JWT, namespace blocking)
+│   ├── config/              # Configuration management
+│   ├── database/            # Data persistence (PostgreSQL)
+│   ├── service/             # Business logic
+│   ├── telemetry/           # Metrics and monitoring
+│   └── validators/          # Input validation
+├── pkg/                     # Public packages
+│   ├── api/                 # API types and structures
+│   │   └── v0/              # Version 0 API types
+│   └── model/               # Data models for server.json
+├── scripts/                 # Development and testing scripts
+├── tests/                   # Integration tests
+└── tools/                   # CLI tools and utilities
+    └── validate-*.sh        # Schema validation tools
+```
+
+### Authentication
+
+Publishing supports multiple authentication methods:
+- **GitHub OAuth** - For publishing by logging into GitHub
+- **GitHub OIDC** - For publishing from GitHub Actions
+- **DNS verification** - For proving ownership of a domain and its subdomains
+- **HTTP verification** - For proving ownership of a domain
+
+The registry validates namespace ownership when publishing. E.g. to publish...:
+- `io.github.domdomegg/my-cool-mcp` you must login to GitHub as `domdomegg`, or be in a GitHub Action on domdomegg's repos
+- `me.adamjones/my-cool-mcp` you must prove ownership of `adamjones.me` via DNS or HTTP challenge
+
+## Community Projects
+
+Check out [community projects](docs/community-projects.md) to explore notable registry-related work created by the community.
+
+## More documentation
+
+See the [documentation](./docs) for more details if your question has not been answered here!
